@@ -1,0 +1,126 @@
+annotation
+	aop
+	配置后处理Bean
+		org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator
+
+	替代后处理Bean
+		<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+
+	切面
+		@Aspect
+
+	切入点
+		@Pointcut
+
+	通知
+		@Before
+		@After
+		@AfterReturning
+		@AfterThrowing
+		@Around
+
+
+通用支持
+	Spring对于数据访问的支持Dao
+		模板模式
+			模板类
+				封装了持久化技术的操作，简化编程的重复代码
+				提供与平台无关的异常转换
+					DataAccessException （RuntimeException）
+						DataIntegrityViolationException			违反了约束
+						DataAccessResourceFailureException		数据访问资源失败
+						InvalidDataAccessResourceUsageException		使用错误的sql语法
+
+			回调接口
+				暴露底层API
+
+	数据源DataSource
+		配置javax.sql.DataSource接口的实现类的Bean
+
+		方式一：Spring内置的DriverManagerDataSource
+
+		方式二：使用第三方的连接池
+
+		方式三：JNDI数据源
+
+	create table t_user(
+		id int primary key auto_increment,
+		username varchar(10),
+		password varchar(10)
+	);
+
+	jdbc支持
+		1.使用org.springframework.jdbc.core.JdbcTemplate
+			配置
+				dataSource->jdbcTemplate->dao
+
+			使用
+				Dao注入JdbcTemplate
+				模板方法
+					execute				给调用者使用Connection
+					query queryForXxx		查询
+					update				DML操作 insert update delete
+
+				回调接口
+					ConnectionCallback		Connection回调，暴露Connection给调用者使用
+					RowMapper			行映射，暴露ResultSet，将结果集中一行数据映射成一个对象
+					ResultSetExtractor		结果集提取器，暴露ResultSet，直接将获得的ResultSet对象交给调用者操作
+					PreparedStatementCreator	PreparedStatement创建器，暴露Connection，自己创建PreparedStatement对象
+					PreparedStatementSetter		PreparedStatement设置器，暴露PreparedStatement，自己往PreparedStatement中set数据
+	
+		2.使用org.springframework.jdbc.core.support.JdbcDaoSupport
+			配置
+				dataSource->dao
+
+			使用
+				Dao继承JdbcDaoSupport
+				使用getJdbcTemplate()方法获得模板
+
+
+	Hibernate支持
+		1.使用org.springframework.orm.hibernateX.HibernateTemplate
+			配置
+				dataSource->sessionFactory->hibernateTemplate->dao
+
+			使用
+				Dao注入HibernateTemplate
+
+		2.使用org.springframework.orm.hibernateX.support.HibernateDaoSupport
+			配置
+				dataSource->sessionFactory->dao
+
+			使用
+				Dao继承HibernateDaoSupport
+				使用getHibernateTemplate()方法获得模板
+
+		3.本地Hibernate
+			配置
+				dataSource->sessionFactory->dao
+				配置后处理Bean做异常转换
+					org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor
+
+			使用
+				Dao注入SessionFactory
+				通过SessionFactory.getCurrentSession()方法获得Session
+				使用Session操作数据库
+
+
+	MyBatis支持（Mybatis提供整合）
+		1.使用MapperFactoryBean
+			配置
+				dataSource->sqlSessionFactory->dao
+
+		2.使用MapperScannerConfigurer
+			配置
+				dataSource->sqlSessionFactory
+				配置后处理Bean扫包
+					MapperScannerConfigurer
+
+
+
+
+
+
+
+
+
